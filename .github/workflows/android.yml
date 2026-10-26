@@ -1,0 +1,79 @@
+name: Android build
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+# Runs from quick successive pushes queue up instead of racing on the release step.
+concurrency:
+  group: android-build
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+      - run: npm ci
+      - run: npm run sync
+
+      - name: Restore signing key
+        if: ${{ env.KEYSTORE_BASE64 != '' }}
+        run: |
+          echo "$KEYSTORE_BASE64" | base64 -d > "$RUNNER_TEMP/upload.jks"
+          echo "KEYSTORE_FILE=$RUNNER_TEMP/upload.jks" >> "$GITHUB_ENV"
+
+      - name: Build test APK and release bundle
+        working-directory: android
+        env:
+          VERSION_CODE: ${{ github.run_number }}
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_ALIAS: upload
+          KEY_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+        run: |
+          chmod +x gradlew
+          ./gradlew --no-daemon assembleDebug
+          (cd .. && AD_RELEASE=1 npm run sync)
+          ./gradlew --no-daemon bundleRelease
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: velvet-thorn-test-apk
+          path: android/app/build/outputs/apk/debug/*.apk
+      - uses: actions/upload-artifact@v4
+        with:
+          name: velvet-thorn-play-bundle
+          path: android/app/build/outputs/bundle/release/*.aab
+
+      # A release per build gives a direct download link for the test APK (open it on the phone to install).
+      # Fails the build if the Play bundle is not signed, and prints the upload key fingerprint.
+      - name: Check Play bundle signature
+        if: ${{ env.KEYSTORE_BASE64 != '' }}
+        run: |
+          jarsigner -verify -verbose -certs android/app/build/outputs/bundle/release/*.aab | grep -E "jar verified|CN=" | head -3
+          keytool -printcert -jarfile android/app/build/outputs/bundle/release/*.aab | grep -E "SHA256"
+
+      - name: Publish test APK as a release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          cp android/app/build/outputs/apk/debug/app-debug.apk velvet-thorn-test.apk
+          cp android/app/build/outputs/bundle/release/*.aab velvet-thorn-play.aab
+          gh release create "build-${{ github.run_number }}" velvet-thorn-test.apk velvet-thorn-play.aab \
+            --title "테스트 빌드 ${{ github.run_number }}" \
+            --notes "폰에서 velvet-thorn-test.apk를 내려받아 설치하세요(테스트 광고). velvet-thorn-play.aab는 Play Console 업로드용입니다(실제 광고)." \
+            --prerelease --target "${{ github.sha }}"

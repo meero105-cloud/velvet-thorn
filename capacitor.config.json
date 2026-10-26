@@ -1,0 +1,7 @@
+{
+  "appId": "com.velvetthorn.game",
+  "appName": "Velvet Thorn",
+  "webDir": "www",
+  "backgroundColor": "#0b0609",
+  "android": { "backgroundColor": "#0b0609" }
+}
