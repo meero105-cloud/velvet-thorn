@@ -81,7 +81,7 @@ const Ads = (() => {
 
   // Bottom banner. The page keeps a 320×50 strip free (body.has-banner) so the banner never covers the board.
   // In the app the native AdMob banner sits on top of that strip; in a browser a placeholder fills it.
-  let nativeShown = false;
+  let nativeShown = false, sizeHooked = false;
   function banner() {
     let el = document.getElementById('ad-banner');
     if (adFree) {
@@ -95,6 +95,8 @@ const Ads = (() => {
     document.body.classList.add('has-banner');
     if (AdMob && !nativeShown) {
       nativeShown = true;
+      // Size the free strip to the banner AdMob actually loaded (it can be taller than 50 on some phones).
+      if (!sizeHooked) { sizeHooked = true; AdMob.addListener('bannerAdSizeChanged', i => { if (i && i.height > 0) document.documentElement.style.setProperty('--banner-h', (i.height + 8) + 'px'); }); }
       init().then(() => { if (!adFree && nativeShown) return AdMob.showBanner({ adId: ids.banner, adSize: 'BANNER', position: 'BOTTOM_CENTER', margin: 0, isTesting: testing }); })
         .catch(e => { nativeShown = false; console.warn('banner', e); });
     }

@@ -282,12 +282,18 @@ body.shake #app { animation: shake .3s; }
 
 /* ---------- Phone-first layout (from the Design mockup, 2026-10-26) ---------- */
 body { word-break: keep-all; overflow-wrap: anywhere; }
-:root { --banner-h: 58px; }
-#app { max-width: 480px; padding: 0 16px 16px; }
-body.has-banner #app { padding-bottom: calc(var(--banner-h) + 16px + env(safe-area-inset-bottom)); }
+:root {
+  --banner-h: 58px;
+  /* Android 15+ draws the app under the status and nav bars; Capacitor passes their size as --safe-area-inset-*. */
+  --sat: max(env(safe-area-inset-top), var(--safe-area-inset-top, 0px));
+  --sab: max(env(safe-area-inset-bottom), var(--safe-area-inset-bottom, 0px));
+}
+body { padding-top: var(--sat); }
+#app { max-width: 480px; padding: 0 16px calc(16px + var(--sab)); }
+body.has-banner #app { padding-bottom: calc(var(--banner-h) + 16px + var(--sab)); }
 #ad-banner {
   position: fixed; left: 0; right: 0; bottom: 0; z-index: 40; display: flex; justify-content: center;
-  padding: 8px 0 env(safe-area-inset-bottom); background: #08040a; border-top: 1px solid var(--line);
+  padding: 8px 0 var(--sab); background: #08040a; border-top: 1px solid var(--line);
 }
 .ad-slot { width: 320px; height: 50px; border: 1px dashed #6a5a4a; border-radius: 4px; display: grid; place-items: center; font: 12px system-ui, sans-serif; color: var(--muted); }
 
@@ -348,7 +354,7 @@ body.has-banner #app { padding-bottom: calc(var(--banner-h) + 16px + env(safe-ar
 .dot .ic { width: 16px; height: 16px; }
 
 .title-screen { min-height: 100vh; flex-direction: column; align-items: stretch; justify-content: flex-start; }
-body.has-banner .title-screen { min-height: calc(100vh - var(--banner-h)); }
+body.has-banner .title-screen { min-height: calc(100vh - var(--banner-h) - var(--sab) - var(--sat)); }
 .title-top { display: flex; justify-content: flex-end; height: 52px; align-items: center; position: relative; z-index: 1; margin-right: -8px; }
 .title-art { position: relative; inset: auto; opacity: 1; height: 34vh; max-height: 300px; margin: 0 -16px; border-block: 1px solid var(--line); }
 .title-body { padding: 20px 0 8px; }
@@ -387,3 +393,10 @@ body.has-banner .title-screen { min-height: calc(100vh - var(--banner-h)); }
 .shop-row { align-items: center; }
 .adfree-on { font-size: 13px; color: var(--gold); text-align: center; }
 .ad-slot.native { border: 0; }
+
+/* keep dialogs and cutscene subtitles clear of the banner and the system bars */
+.overlay { padding: calc(16px + var(--sat)) 16px calc(16px + var(--sab)); }
+body.has-banner .overlay { padding-bottom: calc(16px + var(--banner-h) + var(--sab)); }
+body.has-banner .cine-sub { bottom: calc(9vh + 24px + var(--banner-h) + var(--sab)); }
+.cine-skip { top: calc(16px + var(--sat)); }
+.toast { top: calc(16px + var(--sat)); }
