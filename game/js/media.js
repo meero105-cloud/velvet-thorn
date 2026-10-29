@@ -329,7 +329,7 @@ const Media = (() => {
   // Draws one particle effect on a canvas until the returned stop() is called.
   function particles(cv, type) {
     const g = cv.getContext('2d'), R = Math.random;
-    let w, h, raf, t = 0, flash = 0;
+    let w, h, raf, t = 0;
     const fit = () => { w = cv.width = cv.clientWidth; h = cv.height = cv.clientHeight; };
     fit(); window.addEventListener('resize', fit);
     const spawn = init => {
@@ -400,10 +400,6 @@ const Media = (() => {
             dot(p.x, p.y, p.s, `rgba(255,220,170,${.3 + .3 * Math.sin(t * .05 + p.ph)})`);
         }
       });
-      if (type === 'rain') { // occasional lightning
-        if (R() < .004) flash = 1;
-        if (flash > 0) { g.fillStyle = `rgba(220,230,255,${flash * .3})`; g.fillRect(0, 0, w, h); flash -= .05; }
-      }
       raf = requestAnimationFrame(step);
     };
     step();

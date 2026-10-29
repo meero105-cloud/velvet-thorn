@@ -202,7 +202,7 @@ body.shake #app { animation: shake .3s; }
 .cine-vignette { background: linear-gradient(to top, #000d 0, #0008 18%, transparent 38%), radial-gradient(ellipse at center, transparent 60%, #0009 100%); }
 .cine-layer { position: absolute; inset: 0; opacity: 0; transition: opacity 1.4s ease; }
 .cine-layer.show { opacity: 1; }
-.cine-layer svg { filter: brightness(1.2); }
+.cine-layer svg, .cine-layer img, .cine-fg svg { will-change: transform; backface-visibility: hidden; }
 .cine-layer svg, .cine-layer img { width: 100%; height: 100%; object-fit: cover; }
 .cam-in svg, .cam-in img { animation: camIn 6s ease-out forwards; }
 .cam-out svg, .cam-out img { animation: camOut 6s ease-out forwards; }
@@ -235,7 +235,7 @@ body.shake #app { animation: shake .3s; }
 
 /* cinematic layers: foreground parallax, light, grade, flash, shake, speaker, boss card */
 .cine-fg { position: absolute; inset: 0; pointer-events: none; z-index: 1; }
-.cine-fg svg { width: 100%; height: 100%; filter: blur(2.5px); }
+.cine-fg svg { width: 100%; height: 100%; opacity: .9; }
 .fg-in svg { animation: fgIn 6s ease-out forwards; }
 .fg-out svg { animation: fgOut 6s ease-out forwards; }
 .fg-left svg { animation: fgLeft 6s ease-in-out forwards; }
@@ -247,16 +247,17 @@ body.shake #app { animation: shake .3s; }
 @keyframes fgRight { from { transform: scale(1.3) translateX(-10%); } to { transform: scale(1.3) translateX(10%); } }
 @keyframes fgUp { from { transform: scale(1.3) translateY(10%); } to { transform: scale(1.3) translateY(-10%); } }
 .cine-light, .cine-grade, .cine-flash { position: absolute; inset: 0; pointer-events: none; }
-.cine-light { background: radial-gradient(ellipse at 50% 40%, #ffb86022 0%, transparent 65%); mix-blend-mode: screen; animation: flicker 3.2s infinite; }
-@keyframes flicker { 0%, 100% { opacity: .9; } 12% { opacity: .6; } 20% { opacity: 1; } 47% { opacity: .75; } 55% { opacity: .95; } 78% { opacity: .65; } }
-.grade-warm .cine-grade { background: #ff9a4012; mix-blend-mode: soft-light; }
-.grade-cold .cine-grade { background: #3a5a9a40; mix-blend-mode: soft-light; }
+.cine-light { background: radial-gradient(ellipse at 50% 40%, #ffb86018 0%, transparent 65%); animation: glow 7s ease-in-out infinite; }
+@keyframes glow { 0%, 100% { opacity: .85; } 50% { opacity: 1; } }
+.grade-warm .cine-grade { background: #ff9a400c; }
+.grade-cold .cine-grade { background: #2a4a8a22; }
 .grade-cold .cine-light { animation: none; opacity: .3; }
-.grade-green .cine-grade { background: #3aa86a30; mix-blend-mode: soft-light; }
-.grade-red .cine-grade { background: #c0203a38; mix-blend-mode: soft-light; }
+.grade-green .cine-grade { background: #2a985a1a; }
+.grade-red .cine-grade { background: #b0203a1e; }
 .cine-flash { background: #f4f0ff; opacity: 0; z-index: 2; }
 .cine-flash.go { animation: cineFlash .7s ease-out; }
-@keyframes cineFlash { 0% { opacity: .85; } 100% { opacity: 0; } }
+@keyframes cineFlash { 0% { opacity: .4; } 100% { opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .cine-flash.go, .cine-stage.shake, .cine-light { animation: none; } }
 .cine-stage.shake { animation: cineShake .5s; }
 @keyframes cineShake { 0%, 100% { transform: none; } 15% { transform: translate(-8px, 4px); } 30% { transform: translate(7px, -5px); } 45% { transform: translate(-5px, -3px); } 60% { transform: translate(4px, 4px); } 80% { transform: translate(-2px, 1px); } }
 .cine-sub { transform: translateX(-50%); }
