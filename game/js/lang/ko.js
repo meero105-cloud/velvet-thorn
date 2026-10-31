@@ -3,6 +3,7 @@ I18N.ko = { ui: {
   langBtn: '🌐 English',
   tagline: '가시 궁정의 음모를 퍼즐로 헤쳐 나가는 다크 판타지 매치3',
   rating: '18+ · 암시적 표현 · 노골적 묘사 없음',
+  privacy: '개인정보처리방침',
   newRun: '새 여정 시작',
   resume: '이어하기',
   pauseHead: '일시정지',

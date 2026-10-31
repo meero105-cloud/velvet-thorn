@@ -400,3 +400,5 @@ body.has-banner .overlay { padding-bottom: calc(16px + var(--banner-h) + var(--s
 body.has-banner .cine-sub { bottom: calc(9vh + 24px + var(--banner-h) + var(--sab)); }
 .cine-skip { top: calc(16px + var(--sat)); }
 .toast { top: calc(16px + var(--sat)); }
+.legal { margin-top: 10px; font-size: .75em; }
+.legal a { color: var(--muted); }

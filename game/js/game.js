@@ -187,6 +187,7 @@ function title() {
       </div>
       <p class="stats">${t('titleStats', meta.runs, meta.wins, meta.best)}</p>
       <p class="rating">${t('rating')}</p>
+      <p class="legal"><a href="https://meero105-cloud.github.io/velvet-thorn/privacy/" target="_blank" rel="noopener">${t('privacy')}</a></p>
     </div>
   </div>`;
   $('.title-art').appendChild(Media.art('title', 'bg'));

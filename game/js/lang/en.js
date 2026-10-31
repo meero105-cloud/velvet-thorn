@@ -7,6 +7,7 @@ I18N.en = { ui: {
   langBtn: '🌐 한국어',
   tagline: 'A dark-fantasy match-3 of puzzles and intrigue in the Thorn Court',
   rating: '18+ · Suggestive themes · No explicit content',
+  privacy: 'Privacy Policy',
   newRun: 'New Journey',
   resume: 'Continue',
   pauseHead: 'Paused',
